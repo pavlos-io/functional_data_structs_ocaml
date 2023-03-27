@@ -1,6 +1,7 @@
 module type MyStack = sig
   type 'a t
   
+  val is_empty: 'a t -> bool
   val empty: 'a t
   val length: 'a t -> int
   val push: 'a -> 'a t -> 'a t
@@ -8,9 +9,10 @@ module type MyStack = sig
   val iter: 'a t -> f:('a -> unit) -> unit
 end
 
-module ListStack: MyStack = struct 
+module ListStack: MyStack = struct
   type 'a t = 'a list
 
+  let is_empty t = List.length t = 0
   let empty = []
   let length x = List.length x
 
@@ -18,7 +20,7 @@ module ListStack: MyStack = struct
 
   let peek t =
     match t with
-    | [] -> None
+    | []     -> None
     | x :: _ -> Some(x)
 
   let iter t ~f = List.iter t f
