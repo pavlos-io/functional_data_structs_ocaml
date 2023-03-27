@@ -26,11 +26,38 @@ module ListStack: MyStack = struct
   let iter t ~f = List.iter t f
 end
 
-let lst = ListStack.empty
-let one = ListStack.push 1 ListStack.empty 
+module VariantStack: MyStack = struct
+  type 'a t = Empty | Val of 'a * 'a t
+
+  let is_empty t = 
+    match t with
+    | Empty -> true
+    | _ -> false
+
+  let empty = Empty
+
+  let length t =
+    let rec len t acc =
+      match t with
+      | Empty -> acc
+      | Val(v, rest) -> len rest acc + 1
+    in len t 0
+
+  let push el t = Val(el, t)
+  
+  let peek t = 
+    match t with
+    | Empty     -> None
+    | Val(v, _) -> Some(v)
+  
+  let rec iter t ~f = 
+    match t with
+    | Empty -> ()
+    | Val(v, rest) -> f v; iter rest f
+end
 
 let () = 
-  lst
-  |> ListStack.push 1
-  |> ListStack.push 2
-  |> ListStack.iter ~f:(fun x -> Stdio.printf "%d \n" x)
+  VariantStack.empty
+  |> VariantStack.push 1
+  |> VariantStack.push 2
+  |> VariantStack.iter ~f:(fun x -> Stdio.printf "%d \n" x)
